@@ -1,0 +1,275 @@
+schema: fastsim/2
+name: fruit-op3-apple-grasp-lift-diagnostic
+backend: isaaclab
+runtime:
+  launch_profile: visible
+  physics_hz: 60
+  control_hz: 60
+  physics_profile: accurate
+  seed: 20260924
+scenario:
+  scene:
+    robots:
+      g2:
+        use: robot://station/g2-omnipicker3
+        pose:
+          xyz_m:
+          - -1.499920404
+          - -0.069999955
+          - 0.04
+          quat_xyzw:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    environment:
+      use: scene://station/validation-floor
+    objects:
+      tabletop:
+        use: object://local/type-3a-white-tabletop
+        pose:
+          xyz_m:
+          - -0.6411615
+          - 0.0
+          - 0.735
+          quat_xyzw:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+      apple:
+        use: object://local/type-3a-apple
+        scale:
+        - 0.001
+        - 0.001
+        - 0.001
+        pose:
+          xyz_m:
+          - -0.747
+          - -0.285
+          - 0.7314795589
+          quat_xyzw:
+          - 0.0007231502
+          - -0.0511782207
+          - -0.0113323405
+          - 0.9986249804
+  behavior:
+    task:
+      schema: mission-blueprint/3
+      name: apple-op3-grasp-lift-diagnostic
+      entry: pregrasp
+      pregrasp:
+        kind: action
+        action:
+          type: move
+          robot: g2
+          solver_profile: curobo
+          ee: op3_e_r_base_link
+          pose:
+            name: world_to_ee
+            pose:
+              source: inline
+              frame: object
+              object: apple
+              data:
+              - name: apple-grasp-src297-rollm45.00-op3-palm-pregrasp
+                position:
+                - -0.14468134041602168
+                - -0.04114220215918424
+                - 0.244850050319857
+                quaternion:
+                - 0.24565263576018728
+                - 0.46533721280832796
+                - 0.8135075960990705
+                - 0.24763168619738748
+            trans: []
+        next:
+          success:
+          - grasp
+      grasp:
+        kind: action
+        action:
+          type: pick
+          robot: g2
+          solver_profile: curobo
+          ee: op3_e_r_base_link
+          pose:
+            name: world_to_ee
+            pose:
+              source: inline
+              frame: object
+              object: apple
+              data:
+              - name: apple-op3-mesh-clearance-candidate
+                position:
+                - -0.0816668356458638
+                - -0.02371441317663801
+                - 0.1691833842128347
+                quaternion:
+                - 0.24565263576018728
+                - 0.46533721280832796
+                - 0.8135075960990705
+                - 0.24763168619738748
+            trans: []
+          gripper:
+            open:
+              op3_e_r_joint1: -0.0016336193989608709
+              op3_e_r_joint12: 0.028770081998453365
+              op3_e_r_joint13: 0.0
+              op3_e_r_joint14: 0.12299486250447929
+              op3_e_r_joint16: -0.12299245497097812
+              op3_e_r_joint17: 0.12326145502115907
+              op3_e_r_joint18: 0.0
+              op3_e_r_joint22: -0.028767249932217537
+              op3_e_r_joint23: 0.0
+              op3_e_r_joint24: -0.12299446968851245
+              op3_e_r_joint26: -0.12299206229769216
+              op3_e_r_joint27: 0.12326106135000611
+              op3_e_r_joint28: 0.0
+            close:
+              op3_e_r_joint1: -0.011824835217823557
+              op3_e_r_joint12: -0.22479800321163496
+              op3_e_r_joint13: 0.0
+              op3_e_r_joint14: 0.8269095178672216
+              op3_e_r_joint16: -0.8248039007190378
+              op3_e_r_joint17: 0.8291250940618311
+              op3_e_r_joint18: 0.0
+              op3_e_r_joint22: 0.22481542781729774
+              op3_e_r_joint23: 0.0
+              op3_e_r_joint24: -0.82690829630264
+              op3_e_r_joint26: -0.8248026880814782
+              op3_e_r_joint27: 0.8291238673751372
+              op3_e_r_joint28: 0.0
+            close_completion: all_frames_applied
+        next:
+          success:
+          - planner_payload
+      planner_payload:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - name: attach_payload_model
+            kind: curobo_attachment
+            operation: attach
+            object: apple
+            solver_profile: curobo
+        next:
+          success:
+          - lift
+      lift:
+        kind: action
+        action:
+          type: move_to_joint_state
+          robot: g2
+          solver_profile: curobo
+          goalset:
+            candidates:
+            - idx61_arm_r_joint1: -1.4781482219696045
+              idx62_arm_r_joint2: -1.1767934560775757
+              idx63_arm_r_joint3: 1.2310450077056885
+              idx64_arm_r_joint4: -1.9067035913467407
+              idx65_arm_r_joint5: -3.0132505893707275
+              idx66_arm_r_joint6: -0.9899188876152039
+              idx67_arm_r_joint7: -0.06104819476604462
+          allow_boundary_collision: start
+          contact_scope: attached_object
+          max_initial_penetration: 0.0045
+        next:
+          success:
+          - settle
+      settle:
+        kind: evaluation
+        metric_id: apple_slow
+        mode: await
+        timeout_s: 10
+        stable_ticks: 6
+        next:
+          success:
+          - verify_lift
+      verify_lift:
+        kind: evaluation
+        metric_id: apple_lifted
+        mode: check
+  evaluation:
+    schema: mission-evaluation/2
+    metrics:
+      apple_slow:
+        kind: linear_speed
+        entity_id: objects.apple
+        tolerance: 0.05
+      apple_lifted:
+        kind: position_error
+        entity_id: objects.apple
+        target:
+        - -0.747
+        - -0.285
+        - 0.85
+        tolerance: 0.04
+    report:
+      boundary: execution_end
+      metrics:
+      - apple_slow
+      - apple_lifted
+      aggregate:
+        weights: {}
+        require_pass:
+        - apple_slow
+        - apple_lifted
+        missing: error
+control:
+  default_robot: g2
+  precedence:
+  - mission
+plugins:
+  mission:
+    use: plugin://fastsim/mission
+    bindings:
+      g2: g2
+    session:
+      heartbeat:
+        timeout_s: 30.0
+      lease:
+        timeout_s: 600.0
+      freshness:
+        max_observation_age_sim_s: 0.25
+    config:
+      motion_timeout_s: 180.0
+      world_capture:
+        enabled: true
+        geometry: false
+      checkpoint:
+        enabled: false
+      robots:
+        g2:
+          model: asset://robot_open110.yaml
+          tool_frames:
+          - op3_e_r_base_link
+          limits:
+            acceleration: 4.0
+            jerk: 60.0
+      solvers:
+        curobo:
+          robot: g2
+          solver: asset://solver_payload.yaml
+          motion:
+            lock_joints:
+              except:
+              - idx61_arm_r_joint1
+              - idx62_arm_r_joint2
+              - idx63_arm_r_joint3
+              - idx64_arm_r_joint4
+              - idx65_arm_r_joint5
+              - idx66_arm_r_joint6
+              - idx67_arm_r_joint7
+  record:
+    use: plugin://fastsim/record
+    config:
+      streams:
+        observations:
+          mode: none
+          include: {}
+        render_state:
+          enabled: true
+          rate_hz: 30

@@ -1,0 +1,1240 @@
+schema: fastsim/2
+name: move-box-full-linkage-clearance-probe
+backend: isaaclab
+runtime:
+  launch_profile: visible
+  physics_profile: accurate
+  physics_hz: 60
+  control_hz: 60
+  seed: 20260922
+scenario:
+  scene:
+    environment:
+      use: scene://station/scene005-table735-taskclear
+    robots:
+      g2:
+        use: robot://station/g2-op3e-dual-compliant
+        pose:
+          xyz_m:
+          - 5.010561442205941
+          - 3.914999144974836
+          - 0.04
+          quat_xyzw:
+          - 0.0
+          - 0.0
+          - 4.991134732212188e-07
+          - 0.9999999999998754
+    objects:
+      shelf:
+        use: object://station/move-cardboard-shelf-planner-compatible
+        scale:
+        - 0.5
+        - 0.5
+        - 0.5
+        pose:
+          xyz_m:
+          - 6.02
+          - 3.985
+          - 0.735
+          quat_xyzw:
+          - 0.0
+          - 0.0
+          - -0.707106428259938
+          - 0.707107134112981
+      box_left:
+        use: object://station/move-cardboard-box-planner-compatible
+        scale:
+        - 1.0
+        - 1.0
+        - 1.0
+        pose:
+          xyz_m:
+          - 5.55
+          - 4.35
+          - 0.735
+          quat_xyzw:
+          - 0.0
+          - 0.0
+          - -0.007270688917715315
+          - 0.9999735681920107
+      box_right:
+        use: object://station/move-cardboard-box-planner-compatible
+        scale:
+        - 1.0
+        - 1.0
+        - 1.0
+        pose:
+          xyz_m:
+          - 5.55
+          - 3.75
+          - 0.735
+          quat_xyzw:
+          - 0.0
+          - 0.0
+          - -0.02222694360968608
+          - 0.9997529509722749
+  behavior:
+    task:
+      schema: mission-blueprint/3
+      name: move-two-cardboard-boxes-to-upper-shelf
+      entry: preposition_left
+      box_left_above:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_op3_e_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 4.05
+                  - 1.006
+                  quaternion:
+                  - 0.0
+                  - 0.7122292445134936
+                  - 0.7019469376382649
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_descend
+      box_left_descend:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_op3_e_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 4.05
+                  - 0.926
+                  quaternion:
+                  - 0.0
+                  - 0.7122292445134936
+                  - 0.7019469376382649
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+            allow_boundary_collision: end
+        next:
+          success:
+          - box_left_close
+      box_left_close:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            joints:
+              op3_e_joint1: -0.005519581365908851
+              op3_e_joint12: 0.014537826595201343
+              op3_e_joint13: 0.0
+              op3_e_joint14: 0.39941464866411175
+              op3_e_joint16: -0.3990918494226595
+              op3_e_joint17: 0.40030899399515607
+              op3_e_joint18: 0.0
+              op3_e_joint22: -0.014529057614128017
+              op3_e_joint23: 0.0
+              op3_e_joint24: -0.39941421016383416
+              op3_e_joint26: -0.3990914118335259
+              op3_e_joint27: 0.4003085544205552
+              op3_e_joint28: 0.0
+            name: close
+            robot: g2
+            solver_profile: finger_left_actuate
+        next:
+          success:
+          - box_left_test_lift
+      box_left_test_lift:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_op3_e_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 4.05
+                  - 0.9660000000000001
+                  quaternion:
+                  - 0.0
+                  - 0.7122292445134936
+                  - 0.7019469376382649
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_verify_lift
+      box_left_verify_lift:
+        kind: evaluation
+        metric_id: box_left_lifted
+        mode: check
+        next:
+          success:
+          - box_left_attach_carry
+          failure:
+          - failed
+      box_left_attach_carry:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: left
+            operation: attach
+            object: box_left
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_left_raise
+      box_left_raise:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_box_left
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 4.05
+                  - 1.155
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_left_to_op3_e_base_link
+                from_object: box_left
+                to_link: op3_e_base_link
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_front
+      box_left_front:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_box_left
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.862499920141922
+                  - 4.0649998427792156
+                  - 1.155
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_left_to_op3_e_base_link
+                from_object: box_left
+                to_link: op3_e_base_link
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_hover
+      box_left_hover:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_box_left
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 6.019999920141844
+                  - 4.0649999999999595
+                  - 1.155
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_left_to_op3_e_base_link
+                from_object: box_left
+                to_link: op3_e_base_link
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_detach_carry
+      box_left_detach_carry:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: left
+            operation: detach
+            object: box_left
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_left_attach_place
+      box_left_attach_place:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: left
+            operation: attach
+            object: box_left
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_left_lower
+      box_left_lower:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_box_left
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 6.019999920141844
+                  - 4.0649999999999595
+                  - 1.119
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_left_to_op3_e_base_link
+                from_object: box_left
+                to_link: op3_e_base_link
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_detach_place
+      box_left_detach_place:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: left
+            operation: detach
+            object: box_left
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_left_open
+      box_left_open:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            joints:
+              op3_e_joint1: -0.0005946149646977453
+              op3_e_joint12: 0.013182771648867306
+              op3_e_joint13: 0.0
+              op3_e_joint14: 0.04558050644818967
+              op3_e_joint16: -0.0455891987444254
+              op3_e_joint17: 0.045679334491948366
+              op3_e_joint18: 0.0
+              op3_e_joint22: -0.013181690000261531
+              op3_e_joint23: 0.0
+              op3_e_joint24: -0.045580314174718445
+              op3_e_joint26: -0.045589007522000145
+              op3_e_joint27: 0.04567914181882933
+              op3_e_joint28: 0.0
+            name: open
+            robot: g2
+            solver_profile: finger_left_actuate
+        next:
+          success:
+          - box_left_retreat
+      box_left_retreat:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: left
+            target:
+              name: world_to_op3_e_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 6.019999920141844
+                  - 4.0649999999999595
+                  - 1.36
+                  quaternion:
+                  - 0.0
+                  - 0.9999999999998755
+                  - 4.991134733844937e-07
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_base_link
+        next:
+          success:
+          - box_left_settle_hold
+      box_left_settle_hold:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            joints:
+              op3_e_joint1: -0.0005946149646977453
+              op3_e_joint12: 0.013182771648867306
+              op3_e_joint13: 0.0
+              op3_e_joint14: 0.04558050644818967
+              op3_e_joint16: -0.0455891987444254
+              op3_e_joint17: 0.045679334491948366
+              op3_e_joint18: 0.0
+              op3_e_joint22: -0.013181690000261531
+              op3_e_joint23: 0.0
+              op3_e_joint24: -0.045580314174718445
+              op3_e_joint26: -0.045589007522000145
+              op3_e_joint27: 0.04567914181882933
+              op3_e_joint28: 0.0
+            name: open
+            robot: g2
+            solver_profile: finger_left_actuate
+        next:
+          success:
+          - box_left_settled
+      box_left_settled:
+        kind: evaluation
+        metric_id: box_left_slow
+        mode: check
+        next:
+          success:
+          - box_left_angular_settled
+          failure:
+          - failed
+      box_left_angular_settled:
+        kind: evaluation
+        metric_id: box_left_upright
+        mode: check
+        next:
+          success:
+          - box_left_verify_position
+          failure:
+          - failed
+      box_left_verify_position:
+        kind: evaluation
+        metric_id: box_left_placed
+        mode: check
+        next:
+          success:
+          - box_left_verify_orientation
+          failure:
+          - failed
+      box_left_verify_orientation:
+        kind: evaluation
+        metric_id: box_left_upright
+        mode: check
+        next:
+          success:
+          - box_right_above
+          failure:
+          - failed
+      box_right_above:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_op3_e_r_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 3.75
+                  - 1.006
+                  quaternion:
+                  - 0.0
+                  - 0.7226489136952177
+                  - 0.6912152685922975
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_descend
+      box_right_descend:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_op3_e_r_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 3.75
+                  - 0.926
+                  quaternion:
+                  - 0.0
+                  - 0.7226489136952177
+                  - 0.6912152685922975
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_close
+      box_right_close:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            joints:
+              op3_e_r_joint1: -0.005519581365908851
+              op3_e_r_joint12: 0.014537826595201343
+              op3_e_r_joint13: 0.0
+              op3_e_r_joint14: 0.39941464866411175
+              op3_e_r_joint16: -0.3990918494226595
+              op3_e_r_joint17: 0.40030899399515607
+              op3_e_r_joint18: 0.0
+              op3_e_r_joint22: -0.014529057614128017
+              op3_e_r_joint23: 0.0
+              op3_e_r_joint24: -0.39941421016383416
+              op3_e_r_joint26: -0.3990914118335259
+              op3_e_r_joint27: 0.4003085544205552
+              op3_e_r_joint28: 0.0
+            name: close
+            robot: g2
+            solver_profile: finger_right_actuate
+        next:
+          success:
+          - box_right_test_lift
+      box_right_test_lift:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_op3_e_r_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 3.75
+                  - 0.9660000000000001
+                  quaternion:
+                  - 0.0
+                  - 0.7226489136952177
+                  - 0.6912152685922975
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_verify_lift
+      box_right_verify_lift:
+        kind: evaluation
+        metric_id: box_right_lifted
+        mode: check
+        next:
+          success:
+          - box_right_attach_carry
+          failure:
+          - failed
+      box_right_attach_carry:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: right
+            operation: attach
+            object: box_right
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_right_raise
+      box_right_raise:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_box_right
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.55
+                  - 3.75
+                  - 1.155
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_right_to_op3_e_r_base_link
+                from_object: box_right
+                to_link: op3_e_r_base_link
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_front
+      box_right_front:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_box_right
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 5.862500079858234
+                  - 3.9049998427792953
+                  - 1.155
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_right_to_op3_e_r_base_link
+                from_object: box_right
+                to_link: op3_e_r_base_link
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_hover
+      box_right_hover:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_box_right
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 6.020000079858155
+                  - 3.9050000000000393
+                  - 1.155
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_right_to_op3_e_r_base_link
+                from_object: box_right
+                to_link: op3_e_r_base_link
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_detach_carry
+      box_right_detach_carry:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: right
+            operation: detach
+            object: box_right
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_right_attach_place
+      box_right_attach_place:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: right
+            operation: attach
+            object: box_right
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_right_lower
+      box_right_lower:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_box_right
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 6.020000079858155
+                  - 3.9050000000000393
+                  - 1.119
+                  quaternion:
+                  - 0.707107134112981
+                  - 0.0
+                  - 0.0
+                  - -0.707106428259938
+              trans:
+              - name: box_right_to_op3_e_r_base_link
+                from_object: box_right
+                to_link: op3_e_r_base_link
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_detach_place
+      box_right_detach_place:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: curobo_attachment
+            solver_profile: right
+            operation: detach
+            object: box_right
+            name: change
+            robot: g2
+        next:
+          success:
+          - box_right_open
+      box_right_open:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            joints:
+              op3_e_r_joint1: -0.0005946149646977453
+              op3_e_r_joint12: 0.013182771648867306
+              op3_e_r_joint13: 0.0
+              op3_e_r_joint14: 0.04558050644818967
+              op3_e_r_joint16: -0.0455891987444254
+              op3_e_r_joint17: 0.045679334491948366
+              op3_e_r_joint18: 0.0
+              op3_e_r_joint22: -0.013181690000261531
+              op3_e_r_joint23: 0.0
+              op3_e_r_joint24: -0.045580314174718445
+              op3_e_r_joint26: -0.045589007522000145
+              op3_e_r_joint27: 0.04567914181882933
+              op3_e_r_joint28: 0.0
+            name: open
+            robot: g2
+            solver_profile: finger_right_actuate
+        next:
+          success:
+          - box_right_retreat
+      box_right_retreat:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: pose
+            solver_profile: right
+            target:
+              name: world_to_op3_e_r_base_link
+              pose:
+                source: inline
+                frame: world
+                data:
+                - name: goal
+                  position:
+                  - 6.020000079858155
+                  - 3.9050000000000393
+                  - 1.36
+                  quaternion:
+                  - 0.0
+                  - 0.9999999999998754
+                  - 4.991134731624491e-07
+                  - 0.0
+              trans: []
+            name: move
+            robot: g2
+            ee: op3_e_r_base_link
+        next:
+          success:
+          - box_right_settle_hold
+      box_right_settle_hold:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            joints:
+              op3_e_r_joint1: -0.0005946149646977453
+              op3_e_r_joint12: 0.013182771648867306
+              op3_e_r_joint13: 0.0
+              op3_e_r_joint14: 0.04558050644818967
+              op3_e_r_joint16: -0.0455891987444254
+              op3_e_r_joint17: 0.045679334491948366
+              op3_e_r_joint18: 0.0
+              op3_e_r_joint22: -0.013181690000261531
+              op3_e_r_joint23: 0.0
+              op3_e_r_joint24: -0.045580314174718445
+              op3_e_r_joint26: -0.045589007522000145
+              op3_e_r_joint27: 0.04567914181882933
+              op3_e_r_joint28: 0.0
+            name: open
+            robot: g2
+            solver_profile: finger_right_actuate
+        next:
+          success:
+          - box_right_settled
+      box_right_settled:
+        kind: evaluation
+        metric_id: box_right_slow
+        mode: check
+        next:
+          success:
+          - box_right_angular_settled
+          failure:
+          - failed
+      box_right_angular_settled:
+        kind: evaluation
+        metric_id: box_right_upright
+        mode: check
+        next:
+          success:
+          - box_right_verify_position
+          failure:
+          - failed
+      box_right_verify_position:
+        kind: evaluation
+        metric_id: box_right_placed
+        mode: check
+        next:
+          success:
+          - box_right_verify_orientation
+          failure:
+          - failed
+      box_right_verify_orientation:
+        kind: evaluation
+        metric_id: box_right_upright
+        mode: check
+        next:
+          success:
+          - final_box_left_position
+          failure:
+          - failed
+      final_box_left_position:
+        kind: evaluation
+        metric_id: box_left_placed
+        mode: check
+        next:
+          success:
+          - final_box_left_orientation
+          failure:
+          - failed
+      final_box_left_orientation:
+        kind: evaluation
+        metric_id: box_left_upright
+        mode: check
+        next:
+          success:
+          - final_box_left_slow
+          failure:
+          - failed
+      final_box_left_slow:
+        kind: evaluation
+        metric_id: box_left_slow
+        mode: check
+        next:
+          success:
+          - final_box_right_position
+          failure:
+          - failed
+      final_box_right_position:
+        kind: evaluation
+        metric_id: box_right_placed
+        mode: check
+        next:
+          success:
+          - done
+          failure:
+          - failed
+      done:
+        kind: success
+      failed:
+        kind: fail
+        code: CARDBOARD_PLACEMENT_FAILED
+        message: A box was not physically lifted, released, and settled in its assigned
+          top-shelf slot.
+      preposition_left:
+        kind: action
+        action:
+          type: custom
+          robot: g2
+          motions:
+          - kind: joints
+            name: preposition
+            robot: g2
+            solver_profile: finger
+            joints:
+              op3_e_joint12: 0.005
+              op3_e_joint22: -0.005
+        next:
+          success:
+          - box_left_above
+  evaluation:
+    schema: mission-evaluation/2
+    metrics:
+      box_left_lifted:
+        kind: position_error
+        entity_id: objects.box_left
+        target:
+        - 5.55
+        - 4.05
+        - 0.775
+        tolerance: 0.012
+      box_left_placed:
+        kind: position_error
+        entity_id: objects.box_left
+        target:
+        - 6.019999920141844
+        - 4.0649999999999595
+        - 1.115
+        tolerance: 0.012
+      box_left_upright:
+        kind: orientation_error
+        entity_id: objects.box_left
+        target:
+        - 0.0
+        - 0.0
+        - -0.707106428259938
+        - 0.707107134112981
+        tolerance: 0.1
+      box_left_slow:
+        kind: linear_speed
+        entity_id: objects.box_left
+        tolerance: 0.008
+      box_right_lifted:
+        kind: position_error
+        entity_id: objects.box_right
+        target:
+        - 5.55
+        - 3.75
+        - 0.775
+        tolerance: 0.012
+      box_right_placed:
+        kind: position_error
+        entity_id: objects.box_right
+        target:
+        - 6.020000079858155
+        - 3.9050000000000393
+        - 1.115
+        tolerance: 0.012
+      box_right_upright:
+        kind: orientation_error
+        entity_id: objects.box_right
+        target:
+        - 0.0
+        - 0.0
+        - -0.707106428259938
+        - 0.707107134112981
+        tolerance: 0.1
+      box_right_slow:
+        kind: linear_speed
+        entity_id: objects.box_right
+        tolerance: 0.008
+      base_locked:
+        kind: position_error
+        entity_id: robots.g2
+        target:
+        - 5.010561442205941
+        - 3.914999144974836
+        - 0.04
+        tolerance: 0.001
+    report:
+      boundary: execution_end
+      metrics:
+      - box_left_placed
+      - box_left_upright
+      - box_left_slow
+      - box_right_placed
+      - box_right_upright
+      - box_right_slow
+      - base_locked
+      aggregate:
+        weights: {}
+        require_pass:
+        - box_left_placed
+        - box_left_upright
+        - box_left_slow
+        - box_right_placed
+        - box_right_upright
+        - box_right_slow
+        - base_locked
+        missing: error
+control:
+  default_robot: g2
+  precedence:
+  - mission
+plugins:
+  mission:
+    use: plugin://fastsim/mission
+    bindings:
+      g2: g2
+    session:
+      heartbeat:
+        timeout_s: 30.0
+      lease:
+        timeout_s: 600.0
+      freshness:
+        max_observation_age_sim_s: 0.25
+    config:
+      motion_timeout_s: 900.0
+      world_capture:
+        enabled: true
+        geometry: true
+      checkpoint:
+        enabled: false
+      robots:
+        g2:
+          model: asset://robot_open110.yaml
+          tool_frames:
+          - op3_e_base_link
+          - op3_e_r_base_link
+          limits:
+            acceleration: 4.0
+            jerk: 60.0
+      solvers:
+        left:
+          robot: g2
+          solver: asset://solver_dual_payload.yaml
+          motion:
+            lock_joints:
+              except:
+              - idx21_arm_l_joint1
+              - idx22_arm_l_joint2
+              - idx23_arm_l_joint3
+              - idx24_arm_l_joint4
+              - idx25_arm_l_joint5
+              - idx26_arm_l_joint6
+              - idx27_arm_l_joint7
+        right:
+          robot: g2
+          solver: asset://solver_dual_payload.yaml
+          motion:
+            lock_joints:
+              except:
+              - idx61_arm_r_joint1
+              - idx62_arm_r_joint2
+              - idx63_arm_r_joint3
+              - idx64_arm_r_joint4
+              - idx65_arm_r_joint5
+              - idx66_arm_r_joint6
+              - idx67_arm_r_joint7
+        finger:
+          robot: g2
+          solver: asset://solver_dual_payload.yaml
+          motion:
+            lock_joints:
+              except:
+              - op3_e_joint12
+              - op3_e_joint22
+        finger_left_actuate:
+          robot: g2
+          solver: asset://solver_dual_payload.yaml
+          motion:
+            lock_joints:
+              except:
+              - op3_e_joint1
+              - op3_e_joint12
+              - op3_e_joint13
+              - op3_e_joint14
+              - op3_e_joint16
+              - op3_e_joint17
+              - op3_e_joint18
+              - op3_e_joint22
+              - op3_e_joint23
+              - op3_e_joint24
+              - op3_e_joint26
+              - op3_e_joint27
+              - op3_e_joint28
+        finger_right_actuate:
+          robot: g2
+          solver: asset://solver_dual_payload.yaml
+          motion:
+            lock_joints:
+              except:
+              - op3_e_r_joint1
+              - op3_e_r_joint12
+              - op3_e_r_joint13
+              - op3_e_r_joint14
+              - op3_e_r_joint16
+              - op3_e_r_joint17
+              - op3_e_r_joint18
+              - op3_e_r_joint22
+              - op3_e_r_joint23
+              - op3_e_r_joint24
+              - op3_e_r_joint26
+              - op3_e_r_joint27
+              - op3_e_r_joint28
+      blueprint:
+        require_evaluation_pass: true
+      debug_draw: false
+  record:
+    use: plugin://fastsim/record
+    config:
+      streams:
+        observations:
+          mode: none
+          include: {}
+        render_state:
+          enabled: true
+          rate_hz: 30

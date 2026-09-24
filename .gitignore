@@ -1,0 +1,10 @@
+/upstream/
+/deps/
+/input/
+/outputs/
+/logs/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.fsr
+*.log

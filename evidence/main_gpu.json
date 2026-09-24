@@ -1,0 +1,42 @@
+{
+  "schema": "fastsim-mission-contract-repro-evidence/1",
+  "review_date": "2026-09-25",
+  "source": "direct fastsim run on GPU; finalized FSR inspected locally",
+  "code": {
+    "FastSim": "cef24ab537929b7974d1c241569acaa1fa72b46b",
+    "FastSim-Plugins": "cc4d86be2998681a5785a306e92d7e2db24ba1a5",
+    "curobo": "c179b80b83206b5ca97ec48663f326a88e54744e"
+  },
+  "runs": {
+    "frame_world_metric": {
+      "seed": 20260924,
+      "config_validate_ok": true,
+      "fastsim_run_ok": false,
+      "failure": "metric requires an explicitly world-framed pose",
+      "task_execution_success": false
+    },
+    "grasp_target_present": {
+      "seed": 20260922,
+      "config_validate_ok": true,
+      "fastsim_run_ok": false,
+      "failure": "finger_left_actuate close plan infeasible",
+      "control_authored": 3,
+      "control_applied_frames": 283,
+      "control_results": 3,
+      "box_left_max_lift_m": 0.0,
+      "task_execution_success": false
+    },
+    "grasp_target_moved": {
+      "seed": 20260922,
+      "config_validate_ok": true,
+      "fastsim_run_ok": false,
+      "failure": "metric requires an explicitly world-framed pose after diagnostic control sequence",
+      "control_authored": 5,
+      "control_applied_frames": 365,
+      "control_results": 5,
+      "box_left_max_lift_m": 0.0,
+      "task_execution_success": false
+    }
+  },
+  "note": "This compact summary omits raw FSR files and large standard assets; it does not constitute a successful physical grasp."
+}

@@ -1,0 +1,21 @@
+{
+  "review_date": "2026-09-25",
+  "scope": "FastSim-Benchmark main branches only",
+  "repositories": {
+    "FastSim-Benchmark/FastSim": "cef24ab537929b7974d1c241569acaa1fa72b46b",
+    "FastSim-Benchmark/FastSim-Plugins": "cc4d86be2998681a5785a306e92d7e2db24ba1a5",
+    "FastSim-Benchmark/curobo": "c179b80b83206b5ca97ec48663f326a88e54744e",
+    "FastSim-Benchmark/layoutgen": "b071cb540a8c9a973a082c215a116c62882b6e4d"
+  },
+  "backend": {
+    "UniRoboSim-isaaclab": "717fef6ccb39e7ec0e403cc791b9f39d77502445",
+    "asset_revision": "SVN r63"
+  },
+  "physics_hz": 60,
+  "control_hz": 60,
+  "physics_profile": "accurate",
+  "seeds": {
+    "grasp": 20260922,
+    "world_frame": 20260924
+  }
+}
