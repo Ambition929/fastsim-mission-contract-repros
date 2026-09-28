@@ -42,3 +42,7 @@
 ## 2026-09-28 主分支再核查
 
 FastSim `5b8520b26f`、FastSim-Plugins `e683734e8a`、layoutgen `aaf3acdfdb`、curobo `f2e2278c14` 的主分支已核查；原有无资产契约探针仍显示 `frame.world` 被拒以及目标抓取接触策略为空。新增的独立运行时版本缺口、最小无资产复现与 GPU 启动观察见 [RUNTIME_RELEASE_SKEW.md](RUNTIME_RELEASE_SKEW.md)。这些探针都不代表五任务通过。
+
+### 同日再次拉取与探针
+
+18 个 FastSim-Benchmark 仓库中仅 FastSim-Plugins 从 `e683734e8a` 快进至 `d8b7294cd0`。该提交只涉及 Mission 导航 yaw 请求准入及相邻文档、测试；无资产 `scripts/probe_contracts.py` 在新的插件提交上复跑，`frame.world` 仍为 `FRAME_UNSUPPORTED`，目标抓取接触策略仍是空列表。三相机直接 Run 仍在 `CameraSpec.render_exclusions` 失败。无相机 Run 在包含正式 Record/Replay 分发入口的完整隔离路径下，仍因 Isaac Lab provider 精确版本不符而在 `runtime.prepare` 失败。路径不完整时出现的 Record 入口错误是诊断设置问题，不是独立的上游阻碍。
