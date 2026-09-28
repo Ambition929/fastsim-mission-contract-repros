@@ -36,3 +36,7 @@ PYTHONPATH="$PWD/deps/UniRoboSim/src" \
 3. 用 `conda run -n isaac6` 分别验收无资产 API 探针、官方插件入口锁、含三相机的直接 FastSim Run、原 60/60 Hz accurate 物理和封口录像。不得通过改元数据版本号、运行时猴子补丁或关闭相机来冒充生产修复。
 
 参考源码：[FastSim 当前主分支](https://github.com/FastSim-Benchmark/FastSim)、[UniRoboSim](https://github.com/GitHofee/UniRoboSim)、[UniRoboSim-isaaclab](https://github.com/GitHofee/UniRoboSim-isaaclab)。
+
+## 引入提交与旧成功版本
+
+先前能运行的 FastSim 主分支历史提交 `cef24ab5379`（2026-09-23）锁 UniRoboSim 0.10.8 和 IsaacLab provider 0.10.22，其相机投影不会读取 `CameraSpec.render_exclusions`。2026-09-24 12:12（北京时间）[`b4a9e2b`](https://github.com/FastSim-Benchmark/FastSim/commit/b4a9e2b2903a2a7f83aa5d01c78f4eb32e9e8791) 把 Core 锁改成 0.10.9，新增相机字段读取；12:20 [`a478e5d`](https://github.com/FastSim-Benchmark/FastSim/commit/a478e5d32c42113efdb5c0a77a1ca063001cf921) 把 provider 0.10.22 改为 0.10.23；14:16 [`fc7a220`](https://github.com/FastSim-Benchmark/FastSim/commit/fc7a220705669592a0c86d639405a658125f01ef) 又锁到当前 0.10.24。故旧版任务成功与当前主分支在准备阶段失败可以同时成立，不是同一运行时版本组合。
