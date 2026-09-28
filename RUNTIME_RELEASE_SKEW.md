@@ -1,4 +1,6 @@
-# 当前主分支运行时版本不闭合（2026-09-28）
+# 主分支运行时版本缺口：发现与解除（2026-09-28）
+
+**状态更新：已解除。** UniRoboSim 主分支 `6d11d5f9fb07` 发布 `v0.10.9`，UniRoboSim-isaaclab 主分支 `19f09a5ab709` 发布 `v0.10.24`。在工作区隔离安装这两个官方版本后，无资产探针输出 `camera_spec_has_render_exclusions=true`、`isaaclab_provider_version_match=true`；Core 相机测试 18 passed，provider 相机排除事务测试 3 passed。直接三相机 FastSim Run 已越过此前的两道版本检查并加载 Isaac Lab GPU 场景；完整任务结果须以最终封口 FSR 为准。下文保留的是版本发布前的历史复现和接口所有者验收要求。
 
 FastSim-Benchmark/FastSim 主分支 `5b8520b26f` 的 `pyproject.toml` 指定 `unirobosim==0.10.9`；其 `integrations/unirobosim/projection.py` 读取 `CameraSpec.render_exclusions`，`aliases.py` 又把 Isaac Lab provider 精确固定为 `0.10.24`。可取得的 GitHofee/UniRoboSim 主分支 `12f7a9350b` 版本是 `0.10.8`，`CameraSpec` 没有该字段；GitHofee/UniRoboSim-isaaclab 主分支 `717fef6ccb` 版本是 `0.10.22`。这些是源码仓库的默认分支版本，不能冒充 FastSim 锁定的版本。
 

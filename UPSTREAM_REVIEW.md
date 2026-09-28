@@ -46,3 +46,7 @@ FastSim `5b8520b26f`、FastSim-Plugins `e683734e8a`、layoutgen `aaf3acdfdb`、c
 ### 同日再次拉取与探针
 
 18 个 FastSim-Benchmark 仓库中仅 FastSim-Plugins 从 `e683734e8a` 快进至 `d8b7294cd0`。该提交只涉及 Mission 导航 yaw 请求准入及相邻文档、测试；无资产 `scripts/probe_contracts.py` 在新的插件提交上复跑，`frame.world` 仍为 `FRAME_UNSUPPORTED`，目标抓取接触策略仍是空列表。三相机直接 Run 仍在 `CameraSpec.render_exclusions` 失败。无相机 Run 在包含正式 Record/Replay 分发入口的完整隔离路径下，仍因 Isaac Lab provider 精确版本不符而在 `runtime.prepare` 失败。路径不完整时出现的 Record 入口错误是诊断设置问题，不是独立的上游阻碍。
+
+### 同日官方版本到达
+
+GitHofee 两仓主分支及标签已分别发布 UniRoboSim 0.10.9 (`6d11d5f9fb07`) 与 UniRoboSim-isaaclab 0.10.24 (`19f09a5ab709`)。隔离安装后无资产版本探针通过，三相机直接 FastSim Run 越过原相机字段和 provider 精确锁，进入 Isaac Lab GPU 场景；完整任务仍须封口 FSR 证明。原有 `frame.world` 和目标抓取接触策略两个探针在本轮最新 FastSim-Plugins 提交上仍复现。

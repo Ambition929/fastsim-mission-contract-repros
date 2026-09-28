@@ -2,9 +2,9 @@
 
 这个仓库记录两个阻碍真实数据生产的问题：G2 + OmniPicker3 E 对目标箱的原生 CuRobo 接触规划失败，以及 Mission 评价拒绝由 SceneQuery 返回的 `frame.world` 世界帧。两者独立：即使解决抓取，评价仍可能中止。
 
-**当前结果：2026-09-28 最新 FastSim 主分支仍有这两个契约问题，另有阻止本地完整仿真启动的运行时版本缺口。**`scripts/probe_contracts.py` 可以无 GPU、无资产复现当前公开接口的行为；`repro/` 保留已经在 GPU 上触发问题的最小任务配置与移箱对照。配置解析、动作执行和真实物理抓取是不同验收层级，本仓库不把任何失败样本称为可生产配置。
+**当前结果：2026-09-28 最新 FastSim 主分支的两个原有契约问题仍可复现；同日新发布的 UniRoboSim 0.10.9 和 Isaac Lab provider 0.10.24 已解除先前的运行时版本缺口。**`scripts/probe_contracts.py` 可以无 GPU、无资产复现当前公开接口的行为；`repro/` 保留已经在 GPU 上触发问题的最小任务配置与移箱对照。配置解析、动作执行和真实物理抓取是不同验收层级，本仓库不把任何失败样本称为可生产配置。
 
-第三个独立问题是当前 FastSim 主分支依赖 UniRoboSim 0.10.9 和 Isaac Lab provider 0.10.24，但公开可取得的上游主分支仍为 0.10.8 和 0.10.22。见 [RUNTIME_RELEASE_SKEW.md](RUNTIME_RELEASE_SKEW.md)；这不是原有两个契约问题的替代解释。
+此前第三个独立问题是 FastSim 主分支锁定的 UniRoboSim 0.10.9 和 Isaac Lab provider 0.10.24 尚未发布；两仓已在 2026-09-28 发布对应标签。见 [RUNTIME_RELEASE_SKEW.md](RUNTIME_RELEASE_SKEW.md)；这不是原有两个契约问题的替代解释。
 
 ## 一分钟契约探针
 
