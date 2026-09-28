@@ -38,3 +38,7 @@
 目标在场的 GPU 复跑也完成：repro/grasp_target_present.yaml 使用同一新版主分支、固定 seed 20260922；正式配置解析 ok=true；运行到第 4 段完整闭指时返回 ok=false，报 Mission arm solver 'finger_left_actuate' for motion 'close' failed with status infeasible，墙钟约 172.4 秒。新版 CuRobo 诊断未使这条目标在场的接触路径可行。物理抓取与完整任务仍未成功。
 
 移箱对照在同一新版主分支上也直接 GPU 复跑：repro/grasp_target_moved.yaml 正式解析通过；FSR 记录 5 次原生控制、365 帧应用和 5 次结果，左箱最大抬升 0 m。之后 Mission 评价仍因 world 帧错误返回 ok=false。目标在场的 FSR 只有 3 次控制、283 帧应用，左箱最大抬升同为 0 m。结构化、脱敏结果见 evidence/main_gpu.json。由此可以分开确认：目标在场的闭指规划仍不可行；移箱后相同控制可执行；两者都不构成物理抓取成功，且评价错误仍存在。
+
+## 2026-09-28 主分支再核查
+
+FastSim `5b8520b26f`、FastSim-Plugins `e683734e8a`、layoutgen `aaf3acdfdb`、curobo `f2e2278c14` 的主分支已核查；原有无资产契约探针仍显示 `frame.world` 被拒以及目标抓取接触策略为空。新增的独立运行时版本缺口、最小无资产复现与 GPU 启动观察见 [RUNTIME_RELEASE_SKEW.md](RUNTIME_RELEASE_SKEW.md)。这些探针都不代表五任务通过。

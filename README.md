@@ -1,8 +1,10 @@
-# FastSim Mission 两个契约问题的最小复现
+# FastSim 数据生产契约与运行时版本最小复现
 
 这个仓库记录两个阻碍真实数据生产的问题：G2 + OmniPicker3 E 对目标箱的原生 CuRobo 接触规划失败，以及 Mission 评价拒绝由 SceneQuery 返回的 `frame.world` 世界帧。两者独立：即使解决抓取，评价仍可能中止。
 
-**当前结果：FastSim-Benchmark 主分支（2026-09-25）尚未解决这两项问题。**`scripts/probe_contracts.py` 可以无 GPU、无资产复现当前公开接口的行为；`repro/` 保留已经在 GPU 上触发问题的最小任务配置与移箱对照。配置解析、动作执行和真实物理抓取是不同验收层级，本仓库不把任何失败样本称为可生产配置。
+**当前结果：2026-09-28 最新 FastSim 主分支仍有这两个契约问题，另有阻止本地完整仿真启动的运行时版本缺口。**`scripts/probe_contracts.py` 可以无 GPU、无资产复现当前公开接口的行为；`repro/` 保留已经在 GPU 上触发问题的最小任务配置与移箱对照。配置解析、动作执行和真实物理抓取是不同验收层级，本仓库不把任何失败样本称为可生产配置。
+
+第三个独立问题是当前 FastSim 主分支依赖 UniRoboSim 0.10.9 和 Isaac Lab provider 0.10.24，但公开可取得的上游主分支仍为 0.10.8 和 0.10.22。见 [RUNTIME_RELEASE_SKEW.md](RUNTIME_RELEASE_SKEW.md)；这不是原有两个契约问题的替代解释。
 
 ## 一分钟契约探针
 
@@ -26,10 +28,11 @@ PYTHONPATH="$PWD/deps/FastSim/src:$PWD/deps/FastSim-Plugins/packages/fastsim-plu
 
 ## 文件
 
-- [ISSUES.md](ISSUES.md)：两个问题的因果证据、公共接口缺口和正反验收条件。
+- [ISSUES.md](ISSUES.md)：原有两个问题的因果证据、公共接口缺口和正反验收条件。
+- [RUNTIME_RELEASE_SKEW.md](RUNTIME_RELEASE_SKEW.md)：当前主分支运行时依赖缺口与无资产复现。
 - [UPSTREAM_REVIEW.md](UPSTREAM_REVIEW.md)：2026-09-25 主分支更新核查、版本与实际检查边界。
 - [GPU_REPRO.md](GPU_REPRO.md)：使用原生 `fastsim run` 的直接命令，不通过启动脚本。
 - [OWNER_PROMPT.md](OWNER_PROMPT.md)：可交给接口契约所有者 Codex 的开发提示词。
-- `repro/`：诊断配置，不是生产配置；`scripts/probe_contracts.py`：无资产的接口行为探针。
+- `repro/`：诊断配置，不是生产配置；`scripts/probe_contracts.py` 和 `scripts/probe_runtime_versions.py`：无资产的接口行为探针。
 
 本仓库没有修改任何 FastSim-Benchmark 仓库源码，未通过插值、对象瞬移、全局关闭碰撞或模拟挂接伪造任务成功。目标仍是可物理抓起并放下的任务配置。
